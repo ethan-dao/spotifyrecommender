@@ -1,1 +1,17 @@
-# spotifyrecommender
+# Spotify Recommender System
+
+Built a Spotify recommender system on Python using TF-IDF,  and cosine similarity, a KNN machine learning algorithm. 
+
+# Data Collection and Preprocessing
+Using the Spotipy API in order to fetch the data and get different attributes from the data, I collected over 1.2 million songs to use as data for my recommender system, each with different features such as popularity, loudness, artist, genre, etc. I had to handle authentication permissions and tokens from the Spotify API itself, and I managed to get the songs through scraping official Spotify playlists. I made functions that went through each playlist, and each song in the playlist, to get track and audio features which I would concatenate together into a dataframe to use for my recommender system. This data collection can be viewed in datacollection.py, and there is some initial data analysis and visualization in dataviewwer.ipynb. 
+
+# Building the recommender system
+First, I preprocessed the data a bit more to drop rows with empty values in the 'Artists' column of the dataframe, and also to replace any NA genres with empty strings, as well as dropping any duplicate songs. From there, if it was not already in the dataframe, I added the song and its features to the existing song dataframe so it could be evaluated using the KNN algorithm. Next, I evaluated the artists and genre of the song using a TF-IDF vectorizer, which would transform the text into a numerical matrix by comparing the number of times a word appears in the dataframe with the number of rows the word appears in. This helps us fit the artist and genre into our machine learning algorithm for predictions, and also gives us a more in-depth version of our recommender system. Next, I scaled the numerical features so they would all be weighted equally. This is an important step because metrics such as popularity are evaluated on a scale from 1-100, while the other metrics are from a scale of 0-1. Although it is possible that we could weight certain qualities of songs more than others (etc. tempo for songs with similar speed), I decided to weight the numerical values equally just as a benchmark. Now, we can convert the scaled numerical features into a matrix and stack them with the TF-IDF vectorizations for artist and genre horizontally. Now, we are ready to apply cosine similarity.
+
+# KNN Algorithm (Cosine similarity)
+Since we are building a content-based recommender system, I decided cosine similarity was a good choice because it essentially maps the songs as points, and then uses the many different features we get to assign relative distances and angles to every song in the dataframe. By using the cosine similarity algorithm, we can use the cosine of the angle between two songs to gauge how similar they are, given that the distance and angle is calculated by the song's artists, genre, popularity, loudness, etc. It is finding the song's nearest neighbor, and by applying this algorithm to a specific song, I decided to get the x nearest songs as the songs to recommend to the user. 
+
+get_recommendations(song_id, songs_displayed) // Get (songs_displayed) song recommendations for the song with ID (song_id), or get x number of nearest neighbors using the cosine similarity algorithm
+
+# Next Steps
+I hope to build a collaborative-filtered recommender system next, or a project where I can use other machine learning algorithms such as decision trees/XGBoost. Although it did not make the most sense to apply those algorithms here, building a collaborative-filtered recommendation system would allow predictions based on the activity of other users around you, which would be interesting to use gradient boosters or decision trees on.
